@@ -1,10 +1,10 @@
 const mysql = require("mysql2");
 
 const db = {
-  host: "localhost",
-  user: "root",
-  password: "Devvar@123",
-  database: "takeyouforward",
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE,
   port: 3306,
   waitForConnections: true,
   connectionLimit: 10,

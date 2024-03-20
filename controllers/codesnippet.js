@@ -40,7 +40,7 @@ const postCode = async (req, res) => {
     }
 
     const user = await db.query(
-      "INSERT INTO CodeSnippets (username, code_language, stdin, source_code,stdout) VALUES (?,?,?,?,?)",
+      "INSERT INTO codesnippets (username, code_language, stdin, source_code,stdout) VALUES (?,?,?,?,?)",
       [username, code_language, stdin, source_code, stdout]
     );
     await redisClient.del("codesnippets");
