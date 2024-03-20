@@ -40,7 +40,11 @@ const redis = require("redis");
 let redisClient;
 
 (async () => {
-  redisClient = redis.createClient({ host: "losthost", port: 6379 });
+  redisClient = redis.createClient({
+    host: "losthost",
+    port: 6379,
+    enable_offline_queue: false,
+  });
 
   redisClient.on("error", (e) => {
     console.error("Redis connection error:" + e);
