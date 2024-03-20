@@ -10,7 +10,7 @@ let redisClient;
     console.error("Redis connection error:" + e);
   });
 
-  // await redisClient.connect();
+  await redisClient.connect();
 })();
 
 const getCode = async (req, res) => {
