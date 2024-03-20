@@ -1,32 +1,32 @@
 const db = require("../config/db");
 const { QueryTypes } = require("sequelize");
-// const redis = require("redis");
-// let redisClient;
+const redis = require("redis");
+let redisClient;
 
-// (async () => {
-//   redisClient = redis.createClient(process.env.REDIS_URL);
+(async () => {
+  redisClient = redis.createClient(process.env.REDIS_URL);
 
-//   redisClient.on("error", (e) => {
-//     console.error("Redis connection error:" + e);
-//   });
+  redisClient.on("error", (e) => {
+    console.error("Redis connection error:" + e);
+  });
 
-//   // await redisClient.connect();
-// })();
+  // await redisClient.connect();
+})();
 
 const getCode = async (req, res) => {
   try {
-    // const cachedData = await redisClient.get("codesnippets");
-    // if (cachedData) {
-    //   res.json({ values: JSON.parse(cachedData) });
-    //   return;
-    // }
+    const cachedData = await redisClient.get("codesnippets");
+    if (cachedData) {
+      res.json({ values: JSON.parse(cachedData) });
+      return;
+    }
     const values = await db.query("SELECT * FROM codesnippets");
-    // await redisClient.set(
-    //   "codesnippets",
-    //   JSON.stringify(values[0]),
-    //   "EX",
-    //   3600
-    // );
+    await redisClient.set(
+      "codesnippets",
+      JSON.stringify(values[0]),
+      "EX",
+      3600
+    );
     res.json({ values: values[0] });
   } catch (error) {
     console.error("Error in getCode function:", error);
@@ -46,7 +46,7 @@ const postCode = async (req, res) => {
       "INSERT INTO codesnippets (username, code_language, stdin, source_code,stdout) VALUES (?,?,?,?,?)",
       [username, code_language, stdin, source_code, stdout]
     );
-    // await redisClient.del("codesnippets");
+    await redisClient.del("codesnippets");
     res.json({ user: user[0] });
   } catch (error) {
     console.error(error);
