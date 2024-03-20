@@ -1,15 +1,21 @@
 const db = require("../config/db");
 const { QueryTypes } = require("sequelize");
 const redis = require("redis");
-
 let redisClient;
+
 (async () => {
-  redisClient = redis.createClient();
+  const redisUrl = process.env.REDIS_URL;
+  redisClient = redis.createClient(redisUrl);
+
   redisClient.on("error", (e) => {
-    console.log(e);
+    console.error("Redis connection error:", e);
   });
-  await redisClient.connect();
+
+  redisClient.on("connect", () => {
+    console.log("Connected to Redis server");
+  });
 })();
+
 const getCode = async (req, res) => {
   try {
     const cachedData = await redisClient.get("codesnippets");
@@ -26,11 +32,11 @@ const getCode = async (req, res) => {
     );
     res.json({ values: values[0] });
   } catch (error) {
-    console.error(error);
+    console.error("Error in getCode function:", error);
     res.status(500).json({ message: "Internal Server Error" });
-    return;
   }
 };
+
 const postCode = async (req, res) => {
   try {
     const { username, code_language, stdin, source_code, stdout } = req.body;
